@@ -1,0 +1,27 @@
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+.claude/
+
+# Design bundle (large, generated)
+design_files/
+
+# Node
+node_modules/
+.next/
+.vercel/
+.wrangler/
+*.tsbuildinfo
+fruitful-next/node_modules/
+fruitful-next/.next/
+fruitful-next/.vercel/
+
+# Env
+.env
+.env.local
+*.env.local
+
+# Logs
+*.log
