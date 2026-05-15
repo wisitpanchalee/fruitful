@@ -4,7 +4,7 @@ import type { Zone, Fruit } from '@/lib/types';
 export const runtime = 'edge';
 
 export default async function WarehousePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const [{ data: zones }, { data: fruits }] = await Promise.all([
     supabase.from('zones').select('*').order('id'),
     supabase.from('fruits').select('*'),

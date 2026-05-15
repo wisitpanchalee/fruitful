@@ -5,7 +5,7 @@ import type { Supplier } from '@/lib/types';
 export const runtime = 'edge';
 
 export default async function SuppliersPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: suppliers } = await supabase
     .from('suppliers')
     .select('*')

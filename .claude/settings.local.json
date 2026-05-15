@@ -17,7 +17,15 @@
       "Bash(npx --yes wrangler@latest login)",
       "Bash(npx --yes wrangler@latest deploy)",
       "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}  size=%{size_download} bytes  type=%{content_type}\\\\n\" https://fruitful.wisitpanchalee01.workers.dev/)",
-      "Bash(curl -sS https://fruitful.wisitpanchalee01.workers.dev/)"
+      "Bash(curl -sS https://fruitful.wisitpanchalee01.workers.dev/)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://zjqtirbsjsxtsjxdvmna.supabase.co/rest/v1/?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcXRpcmJzanN4dHNqeGR2bW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NDc2MTksImV4cCI6MjA5NDQyMzYxOX0.ClGQTFq1gLPgssIykMVMUalbZvf_2UackDIHrU1oHGg\")",
+      "Bash(curl -sS -I \"https://zjqtirbsjsxtsjxdvmna.supabase.co\")",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx wrangler *)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code} redirect=%{redirect_url}\\\\n\" \"https://fruitful-app.pages.dev/\")",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://fruitful-app.pages.dev/login\")",
+      "Bash(curl -sSL \"https://fruitful-app.pages.dev/login\")"
     ]
   }
 }

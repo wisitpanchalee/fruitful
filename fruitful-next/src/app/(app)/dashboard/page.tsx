@@ -9,7 +9,7 @@ import type { Fruit, Purchase, Zone, Payment } from '@/lib/types';
 export const runtime = 'edge';
 
 export default async function DashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const [
     { data: fruits },

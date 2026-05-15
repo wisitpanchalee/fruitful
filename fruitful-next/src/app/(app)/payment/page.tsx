@@ -18,7 +18,7 @@ const METHOD_LABEL: Record<Payment['method'], string> = {
 };
 
 export default async function PaymentPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const [{ data: payments }, { data: suppliers }] = await Promise.all([
     supabase.from('payments').select('*').order('due'),
     supabase.from('suppliers').select('*'),

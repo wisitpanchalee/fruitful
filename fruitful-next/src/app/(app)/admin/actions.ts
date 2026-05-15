@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 type Role = 'admin' | 'warehouse_manager' | 'accountant' | 'viewer';
 
 export async function updateUserRole(userId: string, role: Role) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'unauthorized' };
 
@@ -33,7 +33,7 @@ export async function updateUserRole(userId: string, role: Role) {
 }
 
 export async function toggleUserActive(userId: string, active: boolean) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'unauthorized' };
   if (userId === user.id) return { error: 'ห้ามปิดบัญชีตัวเอง' };

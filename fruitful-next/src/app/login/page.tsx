@@ -3,12 +3,13 @@ import { login, signup } from './actions';
 
 export const runtime = 'edge';
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string; msg?: string; mode?: string };
+  searchParams: Promise<{ error?: string; msg?: string; mode?: string }>;
 }) {
-  const isSignup = searchParams.mode === 'signup';
+  const params = await searchParams;
+  const isSignup = params.mode === 'signup';
   return (
     <div className="auth-wrap">
       <div className="auth-card card">
@@ -27,15 +28,15 @@ export default function LoginPage({
           {isSignup ? 'กรอกข้อมูลเพื่อสร้างบัญชีผู้จัดการคลัง' : 'ใช้อีเมลและรหัสผ่านของคุณ'}
         </p>
 
-        {searchParams.error && (
+        {params.error && (
           <div className="alert bad" style={{ marginBottom: 14 }}>
             <b>เกิดข้อผิดพลาด</b>
-            <div>{searchParams.error}</div>
+            <div>{params.error}</div>
           </div>
         )}
-        {searchParams.msg && (
+        {params.msg && (
           <div className="alert info" style={{ marginBottom: 14 }}>
-            <div>{searchParams.msg}</div>
+            <div>{params.msg}</div>
           </div>
         )}
 
