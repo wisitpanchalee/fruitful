@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Icon, type IconName } from './icon';
 import { logout } from '@/app/login/actions';
 
-type NavItem = { id: string; href: string; label: string; icon: IconName; group: string; badge?: string };
+type NavItem = { id: string; href: string; label: string; icon: IconName; group: string; badge?: string; adminOnly?: boolean };
 
 const NAV: NavItem[] = [
   { id: 'dashboard',  href: '/dashboard',  label: 'แดชบอร์ด',      icon: 'dashboard', group: '' },
@@ -17,13 +17,17 @@ const NAV: NavItem[] = [
   { id: 'accounting', href: '/accounting', label: 'บัญชี',          icon: 'book',      group: 'การเงิน' },
   { id: 'reports',    href: '/reports',    label: 'รายงาน',         icon: 'chart',     group: 'การเงิน' },
   { id: 'mobile',     href: '/mobile',     label: 'โหมดมือถือ',     icon: 'mobile',    group: 'อื่นๆ' },
+  { id: 'admin',      href: '/admin',      label: 'จัดการผู้ใช้',    icon: 'shield',    group: 'ระบบ', adminOnly: true },
 ];
 
-export function Sidebar({ profileName }: { profileName: string }) {
+export function Sidebar({ profileName, role }: { profileName: string; role: string }) {
   const pathname = usePathname();
+  const isAdmin = role === 'admin';
+
+  const items = NAV.filter((n) => !n.adminOnly || isAdmin);
 
   const groups: { title: string; items: NavItem[] }[] = [];
-  for (const item of NAV) {
+  for (const item of items) {
     let g = groups.find((x) => x.title === item.group);
     if (!g) {
       g = { title: item.group, items: [] };
@@ -67,7 +71,7 @@ export function Sidebar({ profileName }: { profileName: string }) {
         <div className="avatar">{initials}</div>
         <div className="sb-foot-info">
           <b>{profileName}</b>
-          <span>ผู้จัดการคลัง</span>
+          <span>{role === 'admin' ? 'ผู้ดูแลระบบ' : role === 'accountant' ? 'บัญชี' : role === 'viewer' ? 'ผู้อ่าน' : 'ผู้จัดการคลัง'}</span>
         </div>
         <button
           type="submit"

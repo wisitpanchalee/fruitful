@@ -84,6 +84,12 @@ const PATHS: Record<string, React.ReactNode> = {
     </>
   ),
   burger: <path d="M4 6h16M4 12h16M4 18h16" />,
+  shield: (
+    <>
+      <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9.5C7.5 20.5 4 17 4 12V7z" />
+      <path d="M9 12l2 2 4-4" />
+    </>
+  ),
   plus: <path d="M12 5v14M5 12h14" />,
   logout: (
     <>

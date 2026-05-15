@@ -2,27 +2,42 @@
 -- Run this in Supabase SQL Editor (Project > SQL > New query)
 
 -- ============ Profiles (extends auth.users) ============
-create type user_role as enum ('warehouse_manager', 'accountant', 'viewer');
+create type user_role as enum ('admin', 'warehouse_manager', 'accountant', 'viewer');
 
 create table public.profiles (
   id          uuid primary key references auth.users(id) on delete cascade,
   full_name   text not null,
   role        user_role not null default 'warehouse_manager',
+  active      boolean not null default true,
   created_at  timestamptz not null default now()
 );
 
--- Auto-create a profile when a new auth user signs up
+-- Auto-create a profile when a new auth user signs up.
+-- First user becomes admin; subsequent users default to warehouse_manager.
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  is_first boolean;
 begin
+  select count(*) = 0 into is_first from public.profiles;
   insert into public.profiles (id, full_name, role)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email), 'warehouse_manager');
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'full_name', new.email),
+    case when is_first then 'admin'::user_role else 'warehouse_manager'::user_role end
+  );
   return new;
 end; $$;
 
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- Helper: check whether current user is admin (avoids recursive RLS)
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
+$$;
 
 -- ============ Fruits ============
 create table public.fruits (
@@ -114,21 +129,30 @@ create policy "auth read payments"   on public.payments  for select to authentic
 
 -- Warehouse manager can write
 create policy "mgr write suppliers" on public.suppliers for all to authenticated
-  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'warehouse_manager') )
+  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin','warehouse_manager')) )
   with check ( true );
 
 create policy "mgr write zones" on public.zones for all to authenticated
-  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'warehouse_manager') )
+  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin','warehouse_manager')) )
   with check ( true );
 
 create policy "mgr write purchases" on public.purchases for all to authenticated
-  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'warehouse_manager') )
+  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin','warehouse_manager')) )
   with check ( true );
 
 create policy "mgr write payments" on public.payments for all to authenticated
-  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'warehouse_manager') )
+  using ( exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin','warehouse_manager')) )
   with check ( true );
 
--- Users can update their own profile
+-- Users can update their own profile (but not role/active — those are admin-only)
 create policy "self update profile" on public.profiles for update to authenticated
   using ( id = auth.uid() ) with check ( id = auth.uid() );
+
+-- Admins can update any profile (role, active, etc.)
+create policy "admin update profiles" on public.profiles for update to authenticated
+  using ( public.is_admin() ) with check ( public.is_admin() );
+
+-- Admins can delete profiles (does NOT delete auth.users — admin must do that separately
+-- via Supabase admin SDK; deleting from auth.users cascades here via FK)
+create policy "admin delete profiles" on public.profiles for delete to authenticated
+  using ( public.is_admin() );

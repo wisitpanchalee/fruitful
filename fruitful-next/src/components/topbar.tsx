@@ -13,9 +13,17 @@ const TITLE_MAP: Record<string, string> = {
   '/accounting': 'บัญชี',
   '/reports':    'รายงาน',
   '/mobile':     'โหมดมือถือ',
+  '/admin':      'จัดการผู้ใช้',
 };
 
-export function Topbar({ profileName }: { profileName: string }) {
+const ROLE_LABEL: Record<string, string> = {
+  admin: 'ผู้ดูแลระบบ',
+  warehouse_manager: 'ผู้จัดการคลัง',
+  accountant: 'บัญชี',
+  viewer: 'ผู้อ่าน',
+};
+
+export function Topbar({ profileName, role }: { profileName: string; role: string }) {
   const pathname = usePathname() ?? '/dashboard';
   const title = TITLE_MAP[pathname] ?? '';
   const initials = profileName.slice(0, 2);
@@ -47,7 +55,7 @@ export function Topbar({ profileName }: { profileName: string }) {
           <div className="avatar">{initials}</div>
           <div className="tb-user-info">
             <b>{profileName}</b>
-            <span>ผู้จัดการคลัง</span>
+            <span>{ROLE_LABEL[role] ?? 'ผู้จัดการคลัง'}</span>
           </div>
         </div>
       </div>
