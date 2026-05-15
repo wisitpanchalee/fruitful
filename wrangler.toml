@@ -1,0 +1,8 @@
+name = "fruitful"
+compatibility_date = "2024-11-12"
+
+# Static-only deployment: serve files from fruitful-prototype/ directly.
+# No Worker script needed — Cloudflare runtime serves /index.html for "/"
+# and the other files (jsx/css/js) by path.
+[assets]
+directory = "./fruitful-prototype"
